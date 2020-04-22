@@ -2,6 +2,7 @@ package snowfake
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -11,6 +12,8 @@ type Snowfake interface {
 
 type snowfake struct {
 	config
+
+	mu *sync.Mutex
 
 	node  uint64
 	epoch uint64
@@ -38,6 +41,8 @@ func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, err
 
 	s := &snowfake{}
 
+	s.mu = &sync.Mutex{}
+
 	s.node = node
 	s.epoch = epoch
 	s.time = 0
@@ -57,29 +62,31 @@ func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, err
 }
 
 func (s *snowfake) GenerateID() uint64 {
+	s.mu.Lock()
 
 	t := s.now()
 	if t == 0 {
 		return 0
 	}
 
+	step := s.step
 	if s.time == t {
-		s.step++
-		s.step &= s.stepMask
-		if s.step == 0 {
+		step++
+		step &= s.stepMask
+		if step == 0 {
 			for t == s.time {
 				t = s.now()
 			}
 		}
-	} else {
-		s.step = 0
 	}
-
+	s.step = step
 	s.time = t
+
+	s.mu.Unlock()
 
 	r := (t << s.timeShift) & s.timeMask
 	r |= (s.node << s.nodeShift) & s.nodeMask
-	r |= s.step & s.stepMask
+	r |= step & s.stepMask
 
 	return r
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sync"
 	"testing"
 	"time"
 )
@@ -163,6 +164,39 @@ func TestSnowfake_GenerateID(t *testing.T) {
 		assertTrue(t, estimateTimeFromID <= ((id&sf.timeMask)>>sf.timeShift))
 		assertEqual(t, expectedNodeFromID, (id&sf.nodeMask)>>sf.nodeShift)
 		assertEqual(t, expectedStepFromID, id&sf.stepMask)
+	}
+
+}
+
+func TestSnowfake_GenerateID_Collision(t *testing.T) {
+	node := uint64(29)
+	concurrent := 10000
+
+	sf := New(node)
+
+	assertNotNil(t, sf)
+	if sf != nil {
+		var wg sync.WaitGroup
+		c := make(chan uint64, concurrent)
+
+		wg.Add(concurrent)
+		for i := 0; i < concurrent; i++ {
+			go func(c chan uint64, wg *sync.WaitGroup) {
+				id := sf.GenerateID()
+				c <- id
+				wg.Done()
+			}(c, &wg)
+		}
+
+		wg.Wait()
+		close(c)
+
+		mp := make(map[uint64]bool)
+		for ch := range c {
+			mp[ch] = true
+		}
+
+		assertEqual(t, concurrent, len(mp))
 	}
 
 }
