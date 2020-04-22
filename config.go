@@ -1,5 +1,7 @@
 package snowfake
 
+import "time"
+
 const (
 	timeBits = uint8(32)
 	maxBits  = uint8(64)
@@ -12,6 +14,7 @@ type config struct {
 	nodeBits uint8
 	stepBits uint8
 
+	epoch    time.Time
 	timeMask uint64
 	nodeMask uint64
 	stepMask uint64

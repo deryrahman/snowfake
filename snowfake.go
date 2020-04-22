@@ -2,6 +2,7 @@ package snowfake
 
 import (
 	"fmt"
+	"time"
 )
 
 type snowfake struct {
@@ -11,11 +12,12 @@ type snowfake struct {
 
 func New() *snowfake {
 	nodeBits := uint8(8)
-	sf, _ := NewWithConfig(nodeBits, maxBits-timeBits-nodeBits)
+	epoch := int64(1577836800) // epoch start from 01/01/2020 @ 12:00am (UTC)
+	sf, _ := NewWithConfig(epoch, nodeBits, maxBits-timeBits-nodeBits)
 	return sf
 }
 
-func NewWithConfig(nodeBits, stepBits uint8) (*snowfake, error) {
+func NewWithConfig(epoch int64, nodeBits, stepBits uint8) (*snowfake, error) {
 	if timeBits+nodeBits+stepBits > maxBits {
 		expectedBits := maxBits - timeBits
 		actualBits := nodeBits + stepBits
@@ -27,6 +29,8 @@ func NewWithConfig(nodeBits, stepBits uint8) (*snowfake, error) {
 	s.stepBits = stepBits
 
 	s.stepBit = 0
+
+	s.epoch = time.Unix(epoch, 0)
 	s.stepMask = 1<<stepBits - 1
 	s.nodeMask = (1<<nodeBits - 1) << stepBits
 	s.timeMask = (1<<timeBits - 1) << (nodeBits + stepBits)
