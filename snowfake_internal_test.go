@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestNew(t *testing.T) {
@@ -144,6 +145,31 @@ func TestNewWithConfig(t *testing.T) {
 				assertEqual(t, tt.expectedStepMask, sf.stepMask)
 			}
 		})
+	}
+}
+
+func TestSnowfake_GenerateID(t *testing.T) {
+	node := uint64(29)
+
+	sf := New(node)
+
+	estimateTimeFromID := uint64(time.Now().Unix()) - sf.epoch
+	expectedNodeFromID := uint64(29)
+	expectedStepFromID := uint64(0)
+
+	assertNotNil(t, sf)
+	if sf != nil {
+		id := sf.GenerateID()
+		assertTrue(t, estimateTimeFromID <= ((id&sf.timeMask)>>sf.timeShift))
+		assertEqual(t, expectedNodeFromID, (id&sf.nodeMask)>>sf.nodeShift)
+		assertEqual(t, expectedStepFromID, id&sf.stepMask)
+	}
+
+}
+
+func assertTrue(t *testing.T, cond bool) {
+	if !cond {
+		t.Errorf("got false, expected true")
 	}
 }
 

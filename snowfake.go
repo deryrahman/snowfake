@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+type Snowfake interface {
+	GenerateID() uint64
+}
+
 type snowfake struct {
 	config
 
@@ -50,4 +54,44 @@ func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, err
 	s.timeMask = (1<<timeBits - 1) << s.timeShift
 
 	return s, nil
+}
+
+func (s *snowfake) GenerateID() uint64 {
+
+	t := s.now()
+	if t == 0 {
+		return 0
+	}
+
+	if s.time == t {
+		s.step++
+		s.step &= s.stepMask
+		if s.step == 0 {
+			for t == s.time {
+				t = s.now()
+			}
+		}
+	} else {
+		s.step = 0
+	}
+
+	s.time = t
+
+	r := (t << s.timeShift) & s.timeMask
+	r |= (s.node << s.nodeShift) & s.nodeMask
+	r |= s.step & s.stepMask
+
+	return r
+}
+
+func (s *snowfake) now() uint64 {
+
+	t := uint64(time.Now().Unix())
+	t -= s.epoch
+
+	if ((1<<timeBits - 1) & t) == t {
+		return t
+	}
+
+	return 0
 }
