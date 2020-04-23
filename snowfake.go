@@ -58,15 +58,17 @@ func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, err
 	s.time = 0
 	s.step = 0
 
+	s.timeBits = timeBits
 	s.nodeBits = nodeBits
 	s.stepBits = stepBits
 
 	s.timeShift = nodeBits + stepBits
 	s.nodeShift = stepBits
+	s.stepShift = 0
 
-	s.stepMask = 1<<stepBits - 1
-	s.nodeMask = (1<<nodeBits - 1) << s.nodeShift
 	s.timeMask = (1<<timeBits - 1) << s.timeShift
+	s.nodeMask = (1<<nodeBits - 1) << s.nodeShift
+	s.stepMask = (1<<stepBits - 1) << s.stepShift
 
 	return s, nil
 }
@@ -85,7 +87,7 @@ func (s *snowfake) GenerateID() uint64 {
 		// since it will probably collide within same
 		// timestamp
 		s.step++
-		s.step &= s.stepMask
+		s.step &= 1<<s.stepBits - 1
 	} else {
 		s.step = 0
 	}
@@ -94,7 +96,7 @@ func (s *snowfake) GenerateID() uint64 {
 
 	r := (s.time << s.timeShift) & s.timeMask
 	r |= (s.node << s.nodeShift) & s.nodeMask
-	r |= s.step & s.stepMask
+	r |= (s.step << s.stepShift) & s.stepMask
 
 	return r
 }

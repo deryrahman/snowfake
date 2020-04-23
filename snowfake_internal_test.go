@@ -17,6 +17,7 @@ func TestNew(t *testing.T) {
 	expectedEpoch := uint64(1577836800)
 	expectedTimeShift := uint8(32)
 	expectedNodeShift := uint8(24)
+	expectedStepShift := uint8(0)
 	expectedTime := uint64(0)
 	expectedStep := uint64(0)
 	expectedTimeMask := uint64(0xFFFFFFFF00000000)
@@ -32,6 +33,7 @@ func TestNew(t *testing.T) {
 	assertEqual(t, expectedStep, sf.step)
 	assertEqual(t, expectedTimeShift, sf.timeShift)
 	assertEqual(t, expectedNodeShift, sf.nodeShift)
+	assertEqual(t, expectedStepShift, sf.stepShift)
 	assertEqual(t, expectedTimeMask, sf.timeMask)
 	assertEqual(t, expectedNodeMask, sf.nodeMask)
 	assertEqual(t, expectedStepMask, sf.stepMask)
@@ -54,6 +56,7 @@ func TestNewWithConfig(t *testing.T) {
 
 		expectedTimeShift uint8
 		expectedNodeShift uint8
+		expectedStepShift uint8
 		expectedTimeMask  uint64
 		expectedNodeMask  uint64
 		expectedStepMask  uint64
@@ -72,6 +75,7 @@ func TestNewWithConfig(t *testing.T) {
 
 			expectedTimeShift: uint8(32),
 			expectedNodeShift: uint8(16),
+			expectedStepShift: uint8(0),
 			expectedTimeMask:  0xFFFFFFFF00000000,
 			expectedNodeMask:  0xFFFF0000,
 			expectedStepMask:  0xFFFF,
@@ -90,6 +94,7 @@ func TestNewWithConfig(t *testing.T) {
 
 			expectedTimeShift: uint8(12),
 			expectedNodeShift: uint8(4),
+			expectedStepShift: uint8(0),
 			expectedTimeMask:  0xFFFFFFFF000,
 			expectedNodeMask:  0xFF0,
 			expectedStepMask:  0xF,
@@ -108,6 +113,7 @@ func TestNewWithConfig(t *testing.T) {
 
 			expectedTimeShift: uint8(2),
 			expectedNodeShift: uint8(0),
+			expectedStepShift: uint8(0),
 			expectedTimeMask:  0b1111111111111111111111111111111100,
 			expectedNodeMask:  0b11,
 			expectedStepMask:  0b0,
@@ -141,6 +147,7 @@ func TestNewWithConfig(t *testing.T) {
 				assertEqual(t, tt.expectedStep, sf.step)
 				assertEqual(t, tt.expectedTimeShift, sf.timeShift)
 				assertEqual(t, tt.expectedNodeShift, sf.nodeShift)
+				assertEqual(t, tt.expectedStepShift, sf.stepShift)
 				assertEqual(t, tt.expectedTimeMask, sf.timeMask)
 				assertEqual(t, tt.expectedNodeMask, sf.nodeMask)
 				assertEqual(t, tt.expectedStepMask, sf.stepMask)

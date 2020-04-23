@@ -14,6 +14,7 @@ type config struct {
 
 	timeShift uint8
 	nodeShift uint8
+	stepShift uint8
 
 	timeMask uint64
 	nodeMask uint64
