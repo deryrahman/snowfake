@@ -21,6 +21,11 @@ type snowfake struct {
 	step  uint64
 }
 
+// New creates new snowfake object with default config.
+// Args: node should be within 8bit
+// By default, epoch starts from 01/01/2020 @ 12:00am (UTC),
+// 256 slots of node (0-255), and 24bit of stepBits which can provide 16777216 req/s when generating
+// ID. See GenerateID()
 func New(node uint64) *snowfake {
 	nodeBits := uint8(8)
 	epoch := uint64(1577836800) // epoch start from 01/01/2020 @ 12:00am (UTC)
@@ -28,6 +33,11 @@ func New(node uint64) *snowfake {
 	return sf
 }
 
+// NewWithConfig creates new snowfake object.
+// Args: node should be within nodeBits range, epoch should be within 32bit
+// nodeBits+stepBits should be less than or equal to 32
+// Note: use large stepBits if you want to provide high rate per second when generating
+// ID. See GenerateID()
 func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, error) {
 	if timeBits+nodeBits+stepBits > maxBits {
 		expectedBits := maxBits - timeBits
@@ -61,32 +71,30 @@ func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, err
 	return s, nil
 }
 
+// GenerateID generates new ID within 64bit
+// it's not guarantee collision if you use small stepBits.
+// Rule of thumb, 1024 req/s can be safely generated without collision
+// if you use 10 stepBits
 func (s *snowfake) GenerateID() uint64 {
 	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	t := s.now()
-	if t == 0 {
-		return 0
+	if s.time == t {
+		// not guarantee if you use small stepBits
+		// since it will probably collide within same
+		// timestamp
+		s.step++
+		s.step &= s.stepMask
+	} else {
+		s.step = 0
 	}
 
-	step := s.step
-	if s.time == t {
-		step++
-		step &= s.stepMask
-		if step == 0 {
-			for t == s.time {
-				t = s.now()
-			}
-		}
-	}
-	s.step = step
 	s.time = t
 
-	s.mu.Unlock()
-
-	r := (t << s.timeShift) & s.timeMask
+	r := (s.time << s.timeShift) & s.timeMask
 	r |= (s.node << s.nodeShift) & s.nodeMask
-	r |= step & s.stepMask
+	r |= s.step & s.stepMask
 
 	return r
 }
