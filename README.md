@@ -1,9 +1,11 @@
 # Snowfake
-Snowfake is just a Twitter Snowflake IDs alternative for generating unique short ID at high scale.  
-The objective of Snowfake is to generate smaller ID compare with the original Snowflake.  
-It's suitable for generating short IDs at scale. Case study: short link eg. bit.ly 
+[![Build Status](https://travis-ci.org/deryrahman/snowfake.svg?branch=master)](https://travis-ci.org/deryrahman/snowfake) [![GoDoc](https://godoc.org/github.com/deryrahman/snowfake?status.svg)](https://godoc.org/github.com/deryrahman/snowfake) [![Coverage](http://gocover.io/_badge/github.com/deryrahman/snowfake)](https://gocover.io/github.com/deryrahman/snowfake) [![Go report](http://goreportcard.com/badge/deryrahman/snowfake)](http://goreportcard.com/report/deryrahman/snowfake) 
+
+Snowfake is just a Twitter Snowflake IDs alternative for generating unique short ID at high scale.
 
 ## Overview
+The objective of Snowfake is to generate smaller ID compare with the original Snowflake. It's suitable for generating short IDs at scale. Case study: short link eg. bit.ly
+
 By default, a Snowfake ID is composed of
 
 ```markdown
