@@ -19,7 +19,9 @@ type Snowfake struct {
 }
 
 // New creates new snowfake object with default config.
+//
 // Args: node should be within 8bit
+//
 // By default, epoch starts from 01/01/2020 @ 12:00am (UTC),
 // 256 slots of node (0-255), and 24bit of stepBits which can provide 16777216 req/s when generating
 // ID. See GenerateID()
@@ -31,8 +33,10 @@ func New(node uint64) *Snowfake {
 }
 
 // NewWithConfig creates new snowfake object.
+//
 // Args: node should be within nodeBits range, epoch should be within 32bit
 // nodeBits+stepBits should be less than or equal to 32
+//
 // Note: use large stepBits if you want to provide high rate per second when generating
 // ID. See GenerateID()
 func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*Snowfake, error) {
@@ -72,6 +76,7 @@ func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*Snowfake, err
 
 // GenerateID generates new ID within 64bit
 // it's not guarantee collision if you use small stepBits.
+//
 // Rule of thumb, 1024 req/s can be safely generated without collision
 // if you use 10 stepBits
 func (s *Snowfake) GenerateID() uint64 {
