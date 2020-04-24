@@ -6,11 +6,8 @@ import (
 	"time"
 )
 
-type Snowfake interface {
-	GenerateID() uint64
-}
-
-type snowfake struct {
+// Snowfake is an object to generate the ID
+type Snowfake struct {
 	config
 
 	mu *sync.Mutex
@@ -26,7 +23,7 @@ type snowfake struct {
 // By default, epoch starts from 01/01/2020 @ 12:00am (UTC),
 // 256 slots of node (0-255), and 24bit of stepBits which can provide 16777216 req/s when generating
 // ID. See GenerateID()
-func New(node uint64) *snowfake {
+func New(node uint64) *Snowfake {
 	nodeBits := uint8(8)
 	epoch := uint64(1577836800) // epoch start from 01/01/2020 @ 12:00am (UTC)
 	sf, _ := NewWithConfig(node, epoch, nodeBits, maxBits-timeBits-nodeBits)
@@ -38,7 +35,7 @@ func New(node uint64) *snowfake {
 // nodeBits+stepBits should be less than or equal to 32
 // Note: use large stepBits if you want to provide high rate per second when generating
 // ID. See GenerateID()
-func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, error) {
+func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*Snowfake, error) {
 	if timeBits+nodeBits+stepBits > maxBits {
 		expectedBits := maxBits - timeBits
 		actualBits := nodeBits + stepBits
@@ -49,7 +46,7 @@ func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, err
 		return nil, fmt.Errorf("node should below %d", 1<<nodeBits)
 	}
 
-	s := &snowfake{}
+	s := &Snowfake{}
 
 	s.mu = &sync.Mutex{}
 
@@ -77,7 +74,7 @@ func NewWithConfig(node, epoch uint64, nodeBits, stepBits uint8) (*snowfake, err
 // it's not guarantee collision if you use small stepBits.
 // Rule of thumb, 1024 req/s can be safely generated without collision
 // if you use 10 stepBits
-func (s *snowfake) GenerateID() uint64 {
+func (s *Snowfake) GenerateID() uint64 {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -101,7 +98,7 @@ func (s *snowfake) GenerateID() uint64 {
 	return r
 }
 
-func (s *snowfake) now() uint64 {
+func (s *Snowfake) now() uint64 {
 
 	t := uint64(time.Now().Unix())
 	t -= s.epoch
