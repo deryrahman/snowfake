@@ -1,7 +1,7 @@
 # Snowfake
-Snowfake is just a Twitter Snowflake IDs alternative for generating unique short ID at high scale.
-The objective of Snowfake is to generate smaller ID compare with the original Snowflake.
-It's suitable for generating short IDs at scale.
+Snowfake is just a Twitter Snowflake IDs alternative for generating unique short ID at high scale.  
+The objective of Snowfake is to generate smaller ID compare with the original Snowflake.  
+It's suitable for generating short IDs at scale. Case study: short link eg. bit.ly 
 
 ## Overview
 By default, a Snowfake ID is composed of
@@ -12,7 +12,7 @@ By default, a Snowfake ID is composed of
 24 bits for sequence numbers (configurable)
 ```
 
-With this configuration, Snowfake guarantees to generate `16777216` unique IDs per second per machine.
+With this configuration, Snowfake guarantees to generate `16777216` unique IDs per second per machine.  
 To achieve smaller ID you can minimize bits allocation by reducing node bits and sequence bits. 
 
 ## Installation
