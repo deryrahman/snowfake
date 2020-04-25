@@ -34,10 +34,10 @@ func New(nodeID uint64) (*Snowfake, error) {
 }
 
 // GenerateID generates new ID in 64bit format.
-// GenerateID doesn't guarantee uniqueness if you use small SeqBits
+// GenerateID doesn't guarantee uniqueness if you use small seqBits
 // since it will probably collide at the same timestamp.
 //
-// Rule of thumb: 10 SeqBits guarantees 2^10 unique IDs per second without collision.
+// Rule of thumb: 10 seqBits guarantees 2^10 unique IDs per second without collision.
 func (s *Snowfake) GenerateID() uint64 {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -45,7 +45,7 @@ func (s *Snowfake) GenerateID() uint64 {
 	t := s.now()
 	if s.time == t {
 		s.seq++
-		s.seq &= 1<<SeqBits - 1
+		s.seq &= 1<<seqBits - 1
 	} else {
 		s.seq = 0
 	}
@@ -62,7 +62,7 @@ func (s *Snowfake) GenerateID() uint64 {
 func (s *Snowfake) now() uint64 {
 
 	t := uint64(time.Now().Unix())
-	t -= Epoch
+	t -= epoch
 
-	return (1<<TimeBits - 1) & t
+	return (1<<timeBits - 1) & t
 }

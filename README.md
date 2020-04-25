@@ -54,10 +54,10 @@ import (
 )
 
 func main() {
-	snowfake.Epoch = uint64(1577836800) // timestamp start from 01/01/2020 @ 12:00am (UTC)
-	snowfake.NodeBits = uint8(1)        // reserve 2^1 machine numbers
-	snowfake.SeqBits = uint8(4)         // ~2^4 unique ID per second
-	_ = snowfake.Init()                 // must be called to instantiate new config
+	snowfake.SetEpoch(1577836800) // timestamp start from 01/01/2020 @ 12:00am (UTC)
+	snowfake.SetNodeBits(1)       // reserve 2^1 machine numbers
+	snowfake.SetSeqBits(4)        // ~2^4 unique ID per second
+	_ = snowfake.Init()           // must be called to instantiate new config
 
 	nodeID := uint64(1)
 	sf, _ := snowfake.New(nodeID)

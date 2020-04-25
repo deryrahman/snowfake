@@ -3,19 +3,14 @@ package snowfake
 import "fmt"
 
 const (
-	// TimeBits is allocation number of timestamp
-	TimeBits = uint8(32)
-	// MaxBits is allocation number of snowfake ID
-	MaxBits = uint8(64)
+	timeBits = uint8(32)
+	maxBits  = uint8(64)
 )
 
 var (
-	// Epoch is an origin timestamp in second
-	Epoch uint64 = 1577836800 // epoch start from 01/01/2020 @ 12:00am (UTC)
-	// NodeBits is allocation number of machines
-	NodeBits uint8 = 5
-	// SeqBits is allocation number of sequence
-	SeqBits uint8 = 27
+	epoch    uint64
+	nodeBits uint8
+	seqBits  uint8
 
 	timeShift uint8
 	nodeShift uint8
@@ -29,59 +24,44 @@ var (
 )
 
 func init() {
+	// default configuration
+	SetEpoch(1577836800) // epoch start from 01/01/2020 @ 12:00am (UTC)
+	SetNodeBits(5)
+	SetSeqBits(27)
+
 	_ = Init()
 }
 
-// Init loads configuration based on NodeBits and SeqBits
+// Init loads configuration based on nodeBits and seqBits
 func Init() error {
-	if TimeBits+NodeBits+SeqBits > MaxBits {
-		return fmt.Errorf("NodeBits + SeqBits should has %d in total", MaxBits-TimeBits)
+	if timeBits+nodeBits+seqBits > maxBits {
+		return fmt.Errorf("nodeBits + seqBits should has %d in total", maxBits-timeBits)
 	}
 
-	timeShift = NodeBits + SeqBits
-	nodeShift = SeqBits
+	timeShift = nodeBits + seqBits
+	nodeShift = seqBits
 	seqShift = 0
 
-	timeMask = (1<<TimeBits - 1) << timeShift
-	nodeMask = (1<<NodeBits - 1) << nodeShift
-	seqMask = (1<<SeqBits - 1) << seqShift
+	timeMask = (1<<timeBits - 1) << timeShift
+	nodeMask = (1<<nodeBits - 1) << nodeShift
+	seqMask = (1<<seqBits - 1) << seqShift
 
-	maxNode = 1 << NodeBits
+	maxNode = 1 << nodeBits
 
 	return nil
 }
 
-// GetTimeShift returns timeShift from config
-func GetTimeShift() uint8 {
-	return timeShift
+// SetEpoch sets epoch configuration
+func SetEpoch(e uint64) {
+	epoch = e
 }
 
-// GetNodeShift returns nodeShift from config
-func GetNodeShift() uint8 {
-	return nodeShift
+// SetNodeBits sets nodeBits configuration
+func SetNodeBits(n uint8) {
+	nodeBits = n
 }
 
-// GetSeqShift returns seqShift from config
-func GetSeqShift() uint8 {
-	return seqShift
-}
-
-// GetTimeMask returns timeMask from config
-func GetTimeMask() uint64 {
-	return timeMask
-}
-
-// GetNodeMask returns nodeMask from config
-func GetNodeMask() uint64 {
-	return nodeMask
-}
-
-// GetSeqMask returns seqMask from config
-func GetSeqMask() uint64 {
-	return seqMask
-}
-
-// GetMaxNode returns maxNode from config
-func GetMaxNode() uint64 {
-	return maxNode
+// SetSeqBits sets seqBits configuration
+func SetSeqBits(s uint8) {
+	seqBits = s
 }

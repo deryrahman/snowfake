@@ -37,7 +37,7 @@ func TestNew(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(name(tt.nodeID), func(t *testing.T) {
-			snowfake.NodeBits = tt.nodeBits
+			snowfake.SetNodeBits(tt.nodeBits)
 			_ = snowfake.Init()
 
 			sf, err := snowfake.New(tt.nodeID)
@@ -56,16 +56,16 @@ func TestSnowfake_GenerateID(t *testing.T) {
 
 	sf, _ := snowfake.New(nodeID)
 
-	estimateTimeFromID := uint64(time.Now().Unix()) - snowfake.Epoch
+	estimateTimeFromID := uint64(time.Now().Unix()) - uint64(1577836800)
 	expectedNodeFromID := uint64(29)
 	expectedSeqFromID := uint64(0)
 
 	assertNotNil(t, sf)
 	if sf != nil {
 		id := sf.GenerateID()
-		assertTrue(t, estimateTimeFromID <= ((id&snowfake.GetTimeMask())>>snowfake.GetTimeShift()))
-		assertEqual(t, expectedNodeFromID, (id&snowfake.GetNodeMask())>>snowfake.GetNodeShift())
-		assertEqual(t, expectedSeqFromID, id&snowfake.GetSeqMask())
+		assertTrue(t, estimateTimeFromID <= (id&0xFFFFFFFF00000000)>>32)
+		assertEqual(t, expectedNodeFromID, (id&0b11111000000000000000000000000000)>>27)
+		assertEqual(t, expectedSeqFromID, id&0b111111111111111111111111111)
 	}
 
 }
@@ -105,9 +105,9 @@ func TestSnowfake_GenerateID_Collision(t *testing.T) {
 }
 
 func resetConfig() {
-	snowfake.Epoch = 1577836800
-	snowfake.NodeBits = 5
-	snowfake.SeqBits = 27
+	snowfake.SetEpoch(1577836800)
+	snowfake.SetNodeBits(5)
+	snowfake.SetSeqBits(27)
 	_ = snowfake.Init()
 }
 

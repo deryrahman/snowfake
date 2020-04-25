@@ -1,11 +1,11 @@
-package snowfake_test
+package snowfake
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"reflect"
 	"testing"
-
-	"github.com/deryrahman/snowfake"
 )
 
 func TestInit(t *testing.T) {
@@ -76,27 +76,54 @@ func TestInit(t *testing.T) {
 			epoch:       uint64(1577836800),
 			nodeBits:    17,
 			seqBits:     16,
-			expectedErr: errors.New("NodeBits + SeqBits should has 32 in total"),
+			expectedErr: errors.New("nodeBits + seqBits should has 32 in total"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(name(tt.nodeBits, tt.seqBits), func(t *testing.T) {
-			snowfake.Epoch = tt.epoch
-			snowfake.NodeBits = tt.nodeBits
-			snowfake.SeqBits = tt.seqBits
-			err := snowfake.Init()
+			SetEpoch(tt.epoch)
+			SetNodeBits(tt.nodeBits)
+			SetSeqBits(tt.seqBits)
+			err := Init()
 			assertEqual(t, tt.expectedErr, err)
 			if err == nil {
-				assertEqual(t, tt.expectedEpoch, snowfake.Epoch)
-				assertEqual(t, tt.expectedTimeShift, snowfake.GetTimeShift())
-				assertEqual(t, tt.expectedNodeShift, snowfake.GetNodeShift())
-				assertEqual(t, tt.expectedSeqShift, snowfake.GetSeqShift())
-				assertEqual(t, tt.expectedTimeMask, snowfake.GetTimeMask())
-				assertEqual(t, tt.expectedNodeMask, snowfake.GetNodeMask())
-				assertEqual(t, tt.expectedSeqMask, snowfake.GetSeqMask())
-				assertEqual(t, tt.expectedMaxNode, snowfake.GetMaxNode())
+				assertEqual(t, tt.expectedEpoch, epoch)
+				assertEqual(t, tt.expectedTimeShift, timeShift)
+				assertEqual(t, tt.expectedNodeShift, nodeShift)
+				assertEqual(t, tt.expectedSeqShift, seqShift)
+				assertEqual(t, tt.expectedTimeMask, timeMask)
+				assertEqual(t, tt.expectedNodeMask, nodeMask)
+				assertEqual(t, tt.expectedSeqMask, seqMask)
+				assertEqual(t, tt.expectedMaxNode, maxNode)
 			}
 		})
 	}
+}
+
+func assertEqual(t *testing.T, expected, actual interface{}) {
+	t.Helper()
+	if !isEqual(expected, actual) {
+		t.Errorf("got %v, expected %v", actual, expected)
+	}
+}
+
+func isEqual(expected, actual interface{}) bool {
+	if expected == nil || actual == nil {
+		return expected == actual
+	}
+
+	exp, ok := expected.([]byte)
+	if !ok {
+		return reflect.DeepEqual(expected, actual)
+	}
+
+	act, ok := actual.([]byte)
+	if !ok {
+		return false
+	}
+	if exp == nil || act == nil {
+		return exp == nil && act == nil
+	}
+	return bytes.Equal(exp, act)
 }
