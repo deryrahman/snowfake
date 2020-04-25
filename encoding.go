@@ -15,20 +15,9 @@ func init() {
 	}
 }
 
-// Encode with flickr Base58
-func Encode(id uint64) string {
-	return encodeBase58(id)
-}
-
-// Decode with flickr Base58
-func Decode(s string) uint64 {
-	return decodeBase58(s)
-}
-
-// Encode uint64 to string based on flickr Base58
-// adopted from https://github.com/bwmarrin/snowflake/blob/c09e69ae59935edf6d85799e858c26de86b04cb3/snowflake.go#L250
-func encodeBase58(id uint64) string {
-
+// EncodeBase58 encodes uint64 to string based on flickr Base58
+func EncodeBase58(id uint64) string {
+	// implementation is adopted from https://github.com/bwmarrin/snowflake/blob/c09e69ae59935edf6d85799e858c26de86b04cb3/snowflake.go#L250
 	if id < 58 {
 		return string(encodeBase58Map[id])
 	}
@@ -47,9 +36,9 @@ func encodeBase58(id uint64) string {
 	return string(b)
 }
 
-// Decode string to uint64 based on flickr Base58
-// adopted from https://github.com/bwmarrin/snowflake/blob/c09e69ae59935edf6d85799e858c26de86b04cb3/snowflake.go#L271
-func decodeBase58(str string) uint64 {
+// DecodeBase58 decodes string to uint64 based on flickr Base58
+func DecodeBase58(str string) uint64 {
+	// implementation is adopted from https://github.com/bwmarrin/snowflake/blob/c09e69ae59935edf6d85799e858c26de86b04cb3/snowflake.go#L271
 	var id uint64
 
 	b := []byte(str)

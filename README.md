@@ -4,18 +4,21 @@
 Snowfake is just a Twitter Snowflake IDs alternative for generating unique short ID at high scale.
 
 ## Overview
-The objective of Snowfake is to generate smaller ID compare with the original Snowflake. It's suitable for generating short IDs at scale. Case study: short link eg. bit.ly
+The objective of Snowfake is to generate smaller ID compare with the original Snowflake. It's suitable for generating short IDs at scale. Case study: short link eg. bit.ly  
+
+Snowfake also guarantees lifetime 136 years (original Snowflake 69 years). By default it will ran out in 2159. (Epoch is configurable).  
 
 By default, a Snowfake ID is composed of
 
 ```markdown
 32 bits for time in units of second
-8 bits for node/machine numbers (configurable)
-24 bits for sequence numbers (configurable)
+5 bits for node/machine numbers (configurable)
+27 bits for sequence numbers (configurable)
 ```
 
-With this configuration, Snowfake guarantees to generate `16777216` unique IDs per second per machine.  
-To achieve smaller ID you can minimize bits allocation by reducing node bits and sequence bits. 
+With this configuration, Snowfake allows you to generate `2^27` unique IDs per second per machine. It also provides `2^5` distributed machines works together without additional config.  
+
+Both machine numbers and sequence numbers are configurable. To achieve smaller ID you can minimize bits allocation by reducing node bits and sequence bits.
 
 ## Installation
 
@@ -34,14 +37,14 @@ import (
 
 func main() {
 	nodeID := uint64(1)
-	sf := snowfake.New(nodeID) // instantiate with default config
+	sf, _ := snowfake.New(nodeID)
 
 	sfID := sf.GenerateID()
-	println(snowfake.Encode(sfID)) // encoding base58
+	println(snowfake.EncodeBase58(sfID)) // encoding base58
 }
 ```
 
-To generate smaller ID, tune the node bits and step bits numbers as small as possible
+To generate smaller ID, tune the node bits and seq bits numbers as small as possible
 
 ```go
 package main
@@ -51,15 +54,16 @@ import (
 )
 
 func main() {
-	nodeID := uint64(1)
-	epoch := uint64(1577836800) // timestamp start from 01/01/2020 @ 12:00am (UTC)
-	nodeBits := uint8(1)        // reserve 2^1 machine numbers
-	stepBits := uint8(4)        // ~2^4 unique ID per second
+	snowfake.Epoch = uint64(1577836800) // timestamp start from 01/01/2020 @ 12:00am (UTC)
+	snowfake.NodeBits = uint8(1)        // reserve 2^1 machine numbers
+	snowfake.SeqBits = uint8(4)         // ~2^4 unique ID per second
+	_ = snowfake.Init()                 // must be called to instantiate new config
 
-	sf, _ := snowfake.NewWithConfig(nodeID, epoch, nodeBits, stepBits) // instantiate with custom config
+	nodeID := uint64(1)
+	sf, _ := snowfake.New(nodeID)
 
 	sfID := sf.GenerateID()
-	println(snowfake.Encode(sfID)) // encoding base58
+	println(snowfake.EncodeBase58(sfID)) // encoding base58
 }
 ```
 

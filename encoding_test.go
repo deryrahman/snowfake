@@ -1,11 +1,13 @@
-package snowfake
+package snowfake_test
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/deryrahman/snowfake"
 )
 
-func TestEncode(t *testing.T) {
+func TestEncodeBase58(t *testing.T) {
 	name := func(id uint64) string {
 		return fmt.Sprintf("id=%d", id)
 	}
@@ -29,13 +31,13 @@ func TestEncode(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(name(tt.id), func(t *testing.T) {
-			encoded := Encode(tt.id)
+			encoded := snowfake.EncodeBase58(tt.id)
 			assertEqual(t, tt.expectedEncoded, encoded)
 		})
 	}
 }
 
-func TestDecode(t *testing.T) {
+func TestDecodeBase58(t *testing.T) {
 	name := func(str string) string {
 		return fmt.Sprintf("str=%s", str)
 	}
@@ -63,7 +65,7 @@ func TestDecode(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(name(tt.str), func(t *testing.T) {
-			decoded := Decode(tt.str)
+			decoded := snowfake.DecodeBase58(tt.str)
 			assertEqual(t, tt.expectedDecoded, decoded)
 		})
 	}
