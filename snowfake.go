@@ -16,7 +16,7 @@ type Snowfake struct {
 }
 
 // New creates new snowfake instance based on config.
-// It returns an error when nodeID is greater than or equal to config.GetMaxNode()
+// It returns an error when nodeID is greater than or equal to 2^nodeBits
 func New(nodeID uint64) (*Snowfake, error) {
 
 	if nodeID >= maxNode {

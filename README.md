@@ -6,7 +6,7 @@ Snowfake is just a Twitter Snowflake IDs alternative for generating unique short
 ## Overview
 The objective of Snowfake is to generate smaller ID compare with the original Snowflake. It's suitable for generating short IDs at scale. Case study: short link eg. bit.ly  
 
-Snowfake also guarantees lifetime 136 years (original Snowflake 69 years). By default it will ran out in 2159. (Epoch is configurable).  
+Snowfake also guarantees lifetime 136 years (original Snowflake 69 years). By default all IDs will be ran out in 2159. (Epoch is configurable).  
 
 By default, a Snowfake ID is composed of
 
