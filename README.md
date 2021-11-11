@@ -1,5 +1,5 @@
 # Snowfake
-[![Build Status](https://travis-ci.org/deryrahman/snowfake.svg?branch=master)](https://travis-ci.org/deryrahman/snowfake) [![GoDoc](https://godoc.org/github.com/deryrahman/snowfake?status.svg)](https://godoc.org/github.com/deryrahman/snowfake) [![Coverage](http://gocover.io/_badge/github.com/deryrahman/snowfake)](https://gocover.io/github.com/deryrahman/snowfake) [![Go report](http://goreportcard.com/badge/deryrahman/snowfake)](http://goreportcard.com/report/deryrahman/snowfake) 
+[![Build Status](https://travis-ci.org/deryrahman/snowfake.svg?branch=master)](https://travis-ci.org/deryrahman/snowfake) [![GoDoc](https://godoc.org/github.com/deryrahman/snowfake?status.svg)](https://godoc.org/github.com/deryrahman/snowfake) [![Coverage](http://gocover.io/_badge/github.com/deryrahman/snowfake)](https://gocover.io/github.com/deryrahman/snowfake) [![Go Report Card](https://goreportcard.com/badge/github.com/deryrahman/snowfake)](https://goreportcard.com/report/github.com/deryrahman/snowfake)
 
 Snowfake is just a Twitter Snowflake IDs alternative for generating unique short ID at high scale.
 
